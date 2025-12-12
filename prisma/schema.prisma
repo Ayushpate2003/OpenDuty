@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncidentSeverity {
+  SEV1 // Critical
+  SEV2 // High
+  SEV3 // Moderate
+  SEV4 // Low
+}
+
+enum IncidentStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum TimelineEventType {
+  NOTE
+  STATUS_CHANGE
+  RUNBOOK_ACTION
+  ALERT
+}
+
+enum UserRole {
+  ADMIN
+  ENGINEER
+}
+
+enum RunbookStepType {
+  manual
+  notify
+  http
+}
+
+enum NotificationChannelType {
+  matrix
+  mattermost
+  email
+  ntfy
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(ENGINEER)
+  teamId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Incident {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  severity    IncidentSeverity
+  status      IncidentStatus   @default(OPEN)
+  commander   String // Storing as string for simplicity as per types.ts, could relation to User
+  teamId      String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  events      TimelineEvent[]
+}
+
+model TimelineEvent {
+  id         String            @id @default(cuid())
+  incidentId String
+  incident   Incident          @relation(fields: [incidentId], references: [id])
+  type       TimelineEventType
+  content    String
+  author     String
+  createdAt  DateTime          @default(now())
+}
+
+model Runbook {
+  id    String        @id @default(cuid())
+  name  String
+  steps RunbookStep[]
+}
+
+model RunbookStep {
+  id          String          @id @default(cuid())
+  runbookId   String
+  runbook     Runbook         @relation(fields: [runbookId], references: [id])
+  title       String
+  description String
+  type        RunbookStepType
+  target      String?
+  completed   Boolean         @default(false)
+  autoExecute Boolean?        @default(false)
+  order       Int             @default(0) // Added for ordering steps
+}
+
+model NotificationChannel {
+  id      String                  @id @default(cuid())
+  type    NotificationChannelType
+  name    String
+  config  Json // Storing Record<string, string> as Json
+  enabled Boolean                 @default(true)
+}

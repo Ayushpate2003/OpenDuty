@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Frontend (Vite/React + Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - app
+    networks:
+      - open-duty-net
+
+  # Backend API (Next.js)
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    command: npm run dev:api # In real prod, this should be 'start', but requires build step in Dockerfile
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/incidenthub
+      - REDIS_URL=redis://redis:6379
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-supersecret}
+      - NEXTAUTH_URL=http://localhost:3000 # On VM, this might need to range
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - open-duty-net
+
+  # Worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/incidenthub
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - open-duty-net
+
+  # Database
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: incidenthub
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - open-duty-net
+
+  # Queue
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - open-duty-net
+
+networks:
+  open-duty-net:
+    driver: bridge
+
+volumes:
+  pgdata:

@@ -5,12 +5,13 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3001:3000"
+    command: npm run dev:api
     environment:
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/incidenthub
       - REDIS_URL=redis://redis:6379
       - NEXTAUTH_SECRET=supersecret
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://localhost:3001
     depends_on:
       - postgres
       - redis
