@@ -1,0 +1,5 @@
+{
+  "name": "OpenDuty - Incident Response Hub",
+  "description": "A self-hosted, open-source incident management and runbook automation platform featuring real-time timelines, integrations with Matrix/Mattermost, and Dockerized infrastructure.",
+  "requestFramePermissions": []
+}

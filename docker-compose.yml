@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Main Application (Next.js)
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/incidenthub
+      - REDIS_URL=redis://redis:6379
+      - NEXTAUTH_SECRET=supersecret
+      - NEXTAUTH_URL=http://localhost:3000
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - open-duty-net
+
+  # Database
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: incidenthub
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - open-duty-net
+
+  # Background Worker (Runbooks & Notifications)
+  worker:
+    build: 
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/incidenthub
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - open-duty-net
+
+  # Job Queue
+  redis:
+    image: redis:7-alpine
+    networks:
+      - open-duty-net
+
+  # Email Testing (Local SMTP)
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025" # UI
+      - "1025:1025" # SMTP
+    networks:
+      - open-duty-net
+
+  # Error Monitoring (Open Source Sentry Alternative)
+  glitchtip:
+    image: glitchtip/glitchtip
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/glitchtip
+      - SECRET_KEY=changeme
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - open-duty-net
+
+networks:
+  open-duty-net:
+    driver: bridge
+
+volumes:
+  pgdata:
