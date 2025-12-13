@@ -1,11 +1,11 @@
 steps:
   # 1. Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/openduty:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/openduty:$BUILD_ID', '-t', 'gcr.io/$PROJECT_ID/openduty:latest', '.']
 
   # 2. Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/openduty:$COMMIT_SHA']
+    args: ['push', 'gcr.io/$PROJECT_ID/openduty'] # Pushes all tags
 
   # 3. Deploy container to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -15,7 +15,7 @@ steps:
       - 'deploy'
       - 'openduty'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/openduty:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/openduty:latest'
       - '--region'
       - 'europe-west1' # User specified region
       - '--platform'
@@ -29,6 +29,6 @@ steps:
       - '--cpu'
       - '1'
 images:
-  - 'gcr.io/$PROJECT_ID/openduty:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/openduty:$BUILD_ID'
 options:
   logging: CLOUD_LOGGING_ONLY
