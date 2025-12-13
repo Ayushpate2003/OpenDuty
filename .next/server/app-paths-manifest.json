@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/incidents/[id]/route": "app/api/incidents/[id]/route.js",
+  "/api/incidents/[id]/timeline/route": "app/api/incidents/[id]/timeline/route.js",
+  "/api/incidents/route": "app/api/incidents/route.js",
+  "/api/integrations/route": "app/api/integrations/route.js",
+  "/api/jobs/route": "app/api/jobs/route.js",
+  "/api/runbooks/[id]/route": "app/api/runbooks/[id]/route.js",
+  "/api/runbooks/route": "app/api/runbooks/route.js"
+}

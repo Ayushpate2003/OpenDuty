@@ -4,9 +4,6 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true, // Fail-safe for CI builds
     },
-    eslint: {
-        ignoreDuringBuilds: true, // Fail-safe for CI builds
-    },
 };
 
 export default nextConfig;

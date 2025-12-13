@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/incidents/[id]/route": "/api/incidents/[id]",
+  "/api/incidents/[id]/timeline/route": "/api/incidents/[id]/timeline",
+  "/api/incidents/route": "/api/incidents",
+  "/api/integrations/route": "/api/integrations",
+  "/api/jobs/route": "/api/jobs",
+  "/api/runbooks/[id]/route": "/api/runbooks/[id]",
+  "/api/runbooks/route": "/api/runbooks"
+}

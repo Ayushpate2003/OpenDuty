@@ -1,0 +1,3 @@
+{
+  "/api/runbooks/[id]/route": "app/api/runbooks/[id]/route.js"
+}
