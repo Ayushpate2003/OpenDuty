@@ -1,0 +1,35 @@
+steps:
+  # 1. Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.frontend', '-t', 'gcr.io/$PROJECT_ID/openduty-frontend:$BUILD_ID', '-t', 'gcr.io/$PROJECT_ID/openduty-frontend:latest', '.']
+
+  # 2. Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/openduty-frontend'] # Pushes all tags
+
+  # 3. Deploy container to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'openduty-frontend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/openduty-frontend:latest'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--port'
+      - '8080'
+      - '--allow-unauthenticated'
+      # Frontend needs less resources than backend
+      - '--memory'
+      - '512Mi'
+      # Inject Backend URL at runtime (User must set this in Cloud Console)
+      # - '--set-env-vars'
+      # - 'BACKEND_URL=https://openduty-xxxxxxxx.europe-west1.run.app'
+images:
+  - 'gcr.io/$PROJECT_ID/openduty-frontend:$BUILD_ID'
+options:
+  logging: CLOUD_LOGGING_ONLY
