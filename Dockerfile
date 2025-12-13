@@ -12,6 +12,10 @@ COPY . .
 
 RUN npx prisma generate
 
+# Build the application
+RUN npm run build:api
+
 EXPOSE 3000
 
-CMD ["npm", "run", "dev:api"]
+# Start in production mode
+CMD ["npm", "start"]

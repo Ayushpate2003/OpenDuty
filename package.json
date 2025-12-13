@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "next dev -H 0.0.0.0",
+    "build:api": "next build",
+    "start": "next start",
     "build": "vite build",
     "preview": "vite preview",
     "db:push": "prisma db push",
